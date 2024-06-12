@@ -22,9 +22,9 @@ exports.tambahObat = function (req, res) {
     function (err, rows, fields) {
       if (err) {
         console.log(err);
-        response.error("Gagal gagal menginput data obat", res);
+        response.error("Gagal menginput data obat", res);
       } else {
-        response.ok("Berhasil menambahkan data register", res);
+        response.ok("Berhasil menambahkan data obat", res);
       }
     }
   );

@@ -12,10 +12,11 @@ exports.dataRegister = function (req, res) {
   let username = req.body.username;
   let email = req.body.email;
   let password = req.body.password;
-  const query = `INSERT INTO register (username, email, password) VALUES (?,?,?);`;
+  let role = req.body.role;
+  const query = `INSERT INTO register (username, email, password,role) VALUES (?,?,?,?);`;
   connection.query(
     query,
-    [username, email, password],
+    [username, email, password, role],
     function (err, rows, fields) {
       if (err) {
         console.log(err);

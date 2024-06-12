@@ -49,8 +49,6 @@ WHERE
         (v.deskripsiVitamin IS NOT NULL AND v.deskripsiVitamin <> '') OR
         (s.deskripsiSuplemen IS NOT NULL AND s.deskripsiSuplemen <> '')
     );
-
-
 `;
   connection.query(query, [id], function (error, rows, fields) {
     if (error) {
@@ -60,3 +58,5 @@ WHERE
     }
   });
 };
+
+//tambahkan data produk

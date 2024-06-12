@@ -5,7 +5,7 @@ module.exports = function (app) {
   var dataController = require("./controller/dataController");
   var registerController = require("./controller/registerController");
   var loginController = require("./controller/loginController");
-  var editController = require("./controller/editObatCntroller");
+  var ObatController = require("./controller/editObatController");
   //route controller
   app.route("/").get(myJson.index);
   //route dari controller
@@ -18,11 +18,11 @@ module.exports = function (app) {
   app.route("/login").post(loginController.dataLogin);
 
   //route editController_POSTR data
-  app.route("/inputobat").post(editController.tanbahObat);
+  app.route("/inputobat").post(ObatController.tanbahObat);
 
   //route editController_update data
-  app.route("/updateobat").put(editController.UpdateObat);
+  app.route("/updateobat").put(ObatController.UpdateObat);
 
   //route editController_delete data
-  app.route("/deleteobat").delete(editController.deleteObat);
+  app.route("/deleteobat").delete(ObatController.deleteObat);
 };

@@ -21,5 +21,10 @@
   "bugs": {
     "url": "https://github.com/ANDREBEBON/BackendApotek/issues"
   },
-  "homepage": "https://github.com/ANDREBEBON/BackendApotek#readme"
+  "homepage": "https://github.com/ANDREBEBON/BackendApotek#readme",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "express": "^4.19.2",
+    "mysql": "^2.18.1"
+  }
 }

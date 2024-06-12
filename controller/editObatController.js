@@ -8,7 +8,7 @@ exports.index = function (req, res) {
 };
 
 //Post data obat
-exports.tanbahObat = function (req, res) {
+exports.tambahObat = function (req, res) {
   let namaObat = req.body.namaObat; //
   let gambarObat = req.body.gambarObat; //
   let hargaObat = req.body.hargaObat; //
@@ -45,9 +45,16 @@ exports.UpdateObat = function (req, res) {
     function (err, rows, fields) {
       if (err) {
         console.log(err);
-        response.error("Gagal memperbarui data obat", res);
+        response.error("Terjadi kesalahan saat update data", res);
       } else {
-        response.ok("Berhasil menambahkan data register", res);
+        if (rows.affectedRows === 0) {
+          // Tidak ada data yang cocok, kirim pesan kesalahan
+          console.log("Data tidak ditemukan!!");
+          response.ok("Data tidak ditemukan!!", res);
+        } else {
+          // Data berhasil dihapus
+          response.ok("Data berhasil diupdate", res);
+        }
       }
     }
   );
@@ -61,9 +68,16 @@ exports.deleteObat = function (req, res) {
   connection.query(query, [id_obat], function (err, rows, fields) {
     if (err) {
       console.log(err);
-      response.error("Gagal menghapus data obat", res);
+      response.error("Terjadi kesalahan saat menghapus data", res);
     } else {
-      response.ok("Berhasil menghapus data obat", res);
+      if (rows.affectedRows === 0) {
+        // Tidak ada data yang cocok, kirim pesan kesalahan
+        console.log("Data tidak ditemukan!!");
+        response.ok("Data tidak ditemukan!!", res);
+      } else {
+        // Data berhasil dihapus
+        response.ok("Data berhasil dihapus", res);
+      }
     }
   });
 };

@@ -7,6 +7,7 @@ exports.index = function (req, res) {
   response.ok("Aplikasi Rest API berjalan!", res); // Menggunakan response.ok dari res.js
 };
 
+//Post data obat
 exports.tanbahObat = function (req, res) {
   let namaObat = req.body.namaObat; //
   let gambarObat = req.body.gambarObat; //
@@ -66,5 +67,3 @@ exports.deleteObat = function (req, res) {
     }
   });
 };
-
-

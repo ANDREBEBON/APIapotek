@@ -10,5 +10,5 @@ routes(app);
 app.use(bodyParser.urlencoded({ extended: true })); //bodyParser.url
 app.use(bodyParser.json()); //bodyParser.json
 app.listen(3001, () => {
-  console.log(`Server started on port`);
+  console.log("Server started on port");
 });

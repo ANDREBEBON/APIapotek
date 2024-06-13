@@ -7,7 +7,7 @@ exports.index = function (req, res) {
   response.ok("Aplikasi Rest API berjalan!", res); // Menggunakan response.ok dari res.js
 };
 
-// Tampilkan Semua Data Kategori
+// Tampilkan Data Kategori
 exports.tampilKategori = function (req, res) {
   connection.query("SELECT * FROM kategori", function (error, rows, fields) {
     if (error) {

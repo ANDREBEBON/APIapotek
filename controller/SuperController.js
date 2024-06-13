@@ -18,11 +18,9 @@ WHERE email = ? AND password = ?`;
 
   connection.query(query, [email, password], function (err, rows, fields) {
     if (rows.affectedRows === 0) {
-      // Tidak ada data yang cocok, kirim pesan kesalahan
       console.log("Data tidak ditemukan!!");
       response.ok("Data tidak ditemukan!!", res);
     } else {
-      // Data berhasil dihapus
       response.ok("Selamat datang SEPPUHHHH", res);
     }
   });

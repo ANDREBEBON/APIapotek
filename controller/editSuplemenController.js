@@ -58,7 +58,7 @@ exports.UpdateSuplemen = function (req, res) {
           console.log("Data tidak ditemukan!!");
           response.ok("Data tidak ditemukan!!", res);
         } else {
-          // Data berhasil dihapus
+          // Data berhasil di update
           response.ok("Data berhasil diupdate", res);
         }
       }

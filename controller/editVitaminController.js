@@ -52,7 +52,7 @@ exports.UpdateVitamin = function (req, res) {
           console.log("Data tidak ditemukan!!");
           response.ok("Data tidak ditemukan!!", res);
         } else {
-          // Data berhasil dihapus
+          // berhasil di update
           response.ok("Data berhasil diupdate", res);
         }
       }

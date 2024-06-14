@@ -1,7 +1,7 @@
 "use strict";
 
 var response = require("../res"); // Mengimpor res.js
-var connection = require("../koneksi"); // Mengimpor koneksi.js
+var connection = require("../connection"); // Mengimpor koneksi.js
 
 exports.index = function (req, res) {
   response.ok("Aplikasi Rest API berjalan!", res); // Menggunakan response.ok dari res.js
@@ -18,15 +18,15 @@ BEGIN
 END //
 DELIMITER `;
 
-connection.query(query, function (err,rows,fields) {
+  connection.query(query, function (err, rows, fields) {
     if (err) {
-        console.log(err);
-      } else {
-        response.ok("Berhasil menambahkan data inventory", res);
-      }
-});
+      console.log(err);
+    } else {
+      response.ok("Berhasil menambahkan data inventory", res);
+    }
+  });
 };
 
 exports.tampilInventori = function (req, res) {
-  const query = ``
-}
+  const query = ``;
+};

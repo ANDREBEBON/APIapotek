@@ -13,7 +13,7 @@ exports.dataRegister = function (req, res) {
   let email = req.body.email;
   let password = req.body.password;
   let role = req.body.role;
-  const query = `INSERT INTO register (username, email, password,role) VALUES (?,?,?,?);`;
+  const query = `INSERT INTO register (username, email, password,Role) VALUES (?,?,?,?)`;
   connection.query(
     query,
     [username, email, password, role],

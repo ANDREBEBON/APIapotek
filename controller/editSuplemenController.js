@@ -7,30 +7,57 @@ exports.index = function (req, res) {
   response.ok("Aplikasi Rest API berjalan!", res); // Menggunakan response.ok dari res.js
 };
 
-//Post data obat
+//POSTR
 exports.tambahSuplemen = function (req, res) {
-  let namaSuplemen = req.body.namaSuplemen; //
-  let gambarSuplemen = req.body.gambarSuplemen; //
-  let hargaSuplemen = req.body.hargaSuplemen; //
-  let deskripsiSuplemen = req.body.deskripsiSuplemen; // D
-  // let id_kategori = req.body.id_kategori; //
+  let namaSuplemen = req.body.namaSuplemen;
+  let gambarSuplemen = req.body.gambarSuplemen;
+  let hargaSuplemen = req.body.hargaSuplemen;
+  let deskripsiSuplemen = req.body.deskripsiSuplemen;
+  let tgl_expired = req.body.tgl_expired;
 
-  const query = `INSERT INTO suplemen (id_kategori, namaSuplemen, gambarSuplemen, hargaSuplemen, deskripsiSuplemen) VALUES (3,?,?,?,?);`;
+  // Query untuk menambahkan data ke tabel suplemen
+  const querySuplemen = `INSERT INTO suplemen (id_kategori, namaSuplemen, gambarSuplemen, hargaSuplemen, deskripsiSuplemen, tgl_expired) VALUES (1,?,?,?,?,?)`;
   connection.query(
-    query,
-    [namaSuplemen, gambarSuplemen, hargaSuplemen, deskripsiSuplemen],
-    function (err, rows, fields) {
+    querySuplemen,
+    [
+      namaSuplemen,
+      gambarSuplemen,
+      hargaSuplemen,
+      deskripsiSuplemen,
+      tgl_expired
+    ],
+    function (err, result) {
       if (err) {
         console.log(err);
-        response.error("Gagal menginput data suplemen", res);
+        res.status(500).send({ message: "Gagal menginput data suplemen" });
       } else {
-        response.ok("Berhasil menambahkan data suplemen", res);
+        // Mendapatkan id_suplemen yang baru ditambahkan
+        const id_suplemen = result.insertId;
+
+        // Query untuk menambahkan data ke tabel inventori
+        const queryInventori = `INSERT INTO inventori (id_suplemen, tgl_masuk, tgl_expired) VALUES (?, NOW(), ?)`;
+        connection.query(
+          queryInventori,
+          [id_suplemen, tgl_expired],
+          function (err, result) {
+            if (err) {
+              console.log(err);
+              res
+                .status(500)
+                .send({ message: "Gagal menginput data ke inventori" });
+            } else {
+              res.status(200).send({
+                message: "Berhasil menambahkan data suplemen dan inventori"
+              });
+            }
+          }
+        );
       }
     }
   );
 };
 
-// Put obat
+//PUT
 exports.UpdateSuplemen = function (req, res) {
   let id_suplemen = req.body.id_suplemen; // Pastikan Anda mendapatkan id_obat untuk menentukan obat mana yang akan diperbarui
   let namaSuplemen = req.body.namaSuplemen; //
@@ -66,24 +93,77 @@ exports.UpdateSuplemen = function (req, res) {
   );
 };
 
-//DELETE obat
+//DELETE
 exports.deleteSuplemen = function (req, res) {
-  let id_suplemen = req.body.id_suplemen; // Pastikan Anda mendapatkan id_obat untuk menentukan obat mana yang akan diperbarui
+  let id_suplemen = req.body.id_suplemen;
+  // Query untuk menghapus referensi di tabel inventori
+  const deleteInventoriQuery = `DELETE FROM inventori WHERE id_suplemen = ?`;
+  // Query untuk menghapus data dari tabel suplemen setelah referensi di tabel inventori dihapus
+  const deleteSuplemenQuery = `DELETE FROM suplemen WHERE id_suplemen = ?`;
 
-  const query = `DELETE FROM suplemen WHERE id_suplemen =?`;
-  connection.query(query, [id_suplemen], function (err, rows, fields) {
+  connection.beginTransaction(function (err) {
     if (err) {
       console.log(err);
-      response.error("Terjadi kesalahan saat menghapus data", res);
-    } else {
-      if (rows.affectedRows === 0) {
-        // Tidak ada data yang cocok, kirim pesan kesalahan
-        console.log("Data tidak ditemukan!!");
-        response.ok("Data tidak ditemukan!!", res);
-      } else {
-        // Data berhasil dihapus
-        response.ok("Data berhasil dihapus", res);
-      }
+      res.status(500).send({ message: "Gagal menghapus data" });
+      return;
     }
+    // Hapus referensi di tabel inventori
+    connection.query(
+      deleteInventoriQuery,
+      [id_suplemen],
+      function (err, result) {
+        if (err) {
+          console.log(err);
+          res
+            .status(500)
+            .send({ message: "Gagal menghapus data dari tabel inventori" });
+          return connection.rollback(function () {
+            res.end();
+          });
+        }
+
+        if (result.affectedRows === 0) {
+          // Tidak ada data yang cocok di tabel inventori, kirim pesan kesalahan
+          console.log(
+            `Data dengan id ${id_suplemen} tidak ditemukan di tabel inventori`
+          );
+          res.status(404).send({
+            message: `Data dengan id ${id_suplemen} tidak ditemukan di tabel inventori`
+          });
+          return connection.rollback(function () {
+            res.end();
+          });
+        }
+
+        connection.query(
+          deleteSuplemenQuery,
+          [id_suplemen],
+          function (err, result) {
+            if (err) {
+              console.log(err);
+              res
+                .status(500)
+                .send({ message: "Gagal menghapus data dari tabel suplemen" });
+              return connection.rollback(function () {
+                res.end();
+              });
+            }
+            connection.commit(function (err) {
+              if (err) {
+                console.log(err);
+                res.status(500).send({ message: "Gagal menghapus data" });
+                return connection.rollback(function () {
+                  res.end();
+                });
+              }
+              console.log("Data berhasil di hapus");
+              res.status(200).send({
+                message: "Data suplemen dan inventori berhasil dihapus"
+              });
+            });
+          }
+        );
+      }
+    );
   });
 };

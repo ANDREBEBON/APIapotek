@@ -9,6 +9,7 @@ module.exports = function (app) {
   var vitaminController = require("./controller/editVitaminController");
   var SuplemenController = require("./controller/editSuplemenController");
   var SuperController = require("./controller/SuperController");
+  var inventoryController = require("./controller/inventoryController");
 
   //route controller
   app.route("/").get(myJson.index);
@@ -47,4 +48,7 @@ module.exports = function (app) {
 
   //--ROUTE route SuperController--
   app.route("/loginsuper").post(SuperController.superLogin);
+
+  //--ROUTE route inventoryController--
+  app.route("/inventory").post(inventoryController.inventoryController);
 };

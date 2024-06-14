@@ -8,7 +8,6 @@ exports.index = function (req, res) {
 };
 
 // Tampilkan Data Kategori Berdasarkan id_kategori
-// dataController.js
 exports.kategoriberdasarid = function (req, res) {
   let id = req.params.id;
   const query = `

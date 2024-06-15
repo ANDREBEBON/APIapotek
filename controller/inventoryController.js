@@ -26,7 +26,3 @@ DELIMITER `;
     }
   });
 };
-
-exports.tampilInventori = function (req, res) {
-  const query = ``;
-};

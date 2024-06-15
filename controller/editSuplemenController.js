@@ -16,7 +16,7 @@ exports.tambahSuplemen = function (req, res) {
   let tgl_expired = req.body.tgl_expired;
 
   // Query untuk menambahkan data ke tabel suplemen
-  const querySuplemen = `INSERT INTO suplemen (id_kategori, namaSuplemen, gambarSuplemen, hargaSuplemen, deskripsiSuplemen, tgl_expired) VALUES (1,?,?,?,?,?)`;
+  const querySuplemen = `INSERT INTO suplemen (id_kategori, namaSuplemen, gambarSuplemen, hargaSuplemen, deskripsiSuplemen, tgl_expired) VALUES (3,?,?,?,?,?)`;
   connection.query(
     querySuplemen,
     [

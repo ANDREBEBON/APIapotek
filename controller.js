@@ -8,12 +8,12 @@ exports.index = function (req, res) {
 };
 
 // Tampilkan Data Kategori
-exports.tampilKategori = function (req, res) {
-  connection.query("SELECT * FROM kategori", function (error, rows, fields) {
-    if (error) {
-      console.log(error);
-    } else {
-      response.ok(rows, res); // Menggunakan response.ok untuk mengirim data
-    }
-  });
-};
+// exports.tampilKategori = function (req, res) {
+//   connection.query("SELECT * FROM kategori", function (error, rows, fields) {
+//     if (error) {
+//       console.log(error);
+//     } else {
+//       response.ok(rows, res); // Menggunakan response.ok untuk mengirim data
+//     }
+//   });
+// };

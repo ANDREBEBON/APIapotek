@@ -3,21 +3,31 @@
 var response = require("../res"); // Mengimpor res.js
 var connection = require("../connection"); // Mengimpor koneksi.js
 
-exports.index = function (req, res) {
-  response.ok("Aplikasi Rest API berjalan!", res); // Menggunakan response.ok dari res.js
+// --------OBAT-------------//
+//GET
+exports.GetObat = function (req, res) {
+  const query = `SELECT namaObat, hargaObat, gambarObat, deskripsiObat, tgl_expired FROM obat`;
+  connection.query(query, function (err, rows, fields) {
+    if (err) {
+      console.log(err);
+      response.send(err);
+    } else {
+      response.ok(rows, res);
+    }
+  });
 };
-//POSTR
-exports.tambahObat = function (req, res) {
+//POSTR OBAT
+exports.PostObat = function (req, res) {
   let namaObat = req.body.namaObat;
   let gambarObat = req.body.gambarObat;
   let hargaObat = req.body.hargaObat;
   let deskripsiObat = req.body.deskripsiObat;
   let tgl_expired = req.body.tgl_expired;
 
-  const queryObat = `INSERT INTO obat (id_kategori, namaObat, gambarObat, hargaObat, deskripsiObat, tgl_expired) VALUES (1,?,?,?,?,?)`;
+  const queryObat = `INSERT INTO obat (namaObat, hargaObat, gambarObat, deskripsiObat, tgl_expired) VALUES (?,?,?,?,?)`;
   connection.query(
     queryObat,
-    [namaObat, gambarObat, hargaObat, deskripsiObat, tgl_expired],
+    [namaObat, hargaObat, gambarObat, deskripsiObat, tgl_expired],
     function (err, result) {
       if (err) {
         console.log(err);
@@ -25,8 +35,7 @@ exports.tambahObat = function (req, res) {
       } else {
         // Mendapatkan id_obat
         const id_obat = result.insertId;
-        // Query untuk menambahkan data ke tabel inventori
-        const queryInventori = `INSERT INTO inventori (id_obat, tgl_masuk, tgl_expired) VALUES (?, NOW(), ?)`;
+        const queryInventori = `INSERT INTO inventori (id_obat, tgl_expired) VALUES (?, ?)`;
         connection.query(
           queryInventori,
           [id_obat, tgl_expired],
@@ -47,39 +56,35 @@ exports.tambahObat = function (req, res) {
     }
   );
 };
-
-//PUT
+//PUT OBAT
 exports.UpdateObat = function (req, res) {
-  let id_obat = req.body.id_obat; // Pastikan Anda mendapatkan id_obat untuk menentukan obat mana yang akan diperbarui
   let namaObat = req.body.namaObat;
   let gambarObat = req.body.gambarObat;
   let hargaObat = req.body.hargaObat;
   let deskripsiObat = req.body.deskripsiObat;
+  let tgl_expired = req.body.tgl_expired;
 
-  const query = `UPDATE obat SET namaObat = ?, gambarObat = ?, hargaObat = ?, deskripsiObat = ?, id_kategori = 1 WHERE id_obat = ?`;
+  const query = `UPDATE obat SET namaObat = ?, gambarObat = ?, hargaObat = ?, deskripsiObat = ?, WHERE id_obat = ?`;
   connection.query(
     query,
-    [namaObat, gambarObat, hargaObat, deskripsiObat, id_obat],
+    [namaObat, gambarObat, hargaObat, deskripsiObat, tgl_expired, id_obat],
     function (err, rows, fields) {
       if (err) {
         console.log(err);
         response.error("Terjadi kesalahan saat update data", res);
       } else {
         if (rows.affectedRows === 0) {
-          // Tidak ada data yang cocok, kirim pesan kesalahan
           console.log("Data tidak ditemukan!!");
           response.ok("Data tidak ditemukan!!", res);
         } else {
-          // Data berhasil Update
           response.ok("Data berhasil diupdate", res);
         }
       }
     }
   );
 };
-
 //DELETE
-exports.deleteObat = function (req, res) {
+exports.DeleteObat = function (req, res) {
   let id_obat = req.body.id_obat;
 
   const deleteInventoriQuery = `DELETE FROM inventori WHERE id_obat = ?`;
@@ -91,7 +96,6 @@ exports.deleteObat = function (req, res) {
       res.status(500).send({ message: "Gagal menghapus data" });
       return;
     }
-
     connection.query(deleteInventoriQuery, [id_obat], function (err, result) {
       if (err) {
         console.log(err);
@@ -102,9 +106,7 @@ exports.deleteObat = function (req, res) {
           res.end();
         });
       }
-
       if (result.affectedRows === 0) {
-        // Tidak ada data yang cocok di tabel inventori
         console.log(
           `Data dengan id ${id_obat} tidak ditemukan di tabel inventori`
         );
@@ -115,7 +117,6 @@ exports.deleteObat = function (req, res) {
           res.end();
         });
       }
-
       connection.query(deleteObatQuery, [id_obat], function (err, result) {
         if (err) {
           console.log(err);
@@ -126,7 +127,6 @@ exports.deleteObat = function (req, res) {
             res.end();
           });
         }
-
         connection.commit(function (err) {
           if (err) {
             console.log(err);

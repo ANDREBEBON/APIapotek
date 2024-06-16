@@ -1,28 +1,23 @@
 "use strict";
-
+const express = require("express");
+const bodyParser = require("body-parser");
 var response = require("../res"); // Mengimpor res.js
 var connection = require("../connection"); // Mengimpor koneksi.js
 
-exports.index = function (req, res) {
-  response.ok("Aplikasi Rest API berjalan!", res); // Menggunakan response.ok dari res.js
-};
+const app = express();
+app.use(bodyParser.json());
 
-exports.inventoryController = function (req, res) {
-  const query = `DELIMITER //
-CREATE TRIGGER after_vitamin_insert
-AFTER INSERT ON vitamin
-FOR EACH ROW
-BEGIN
-    INSERT INTO inventory (id_vitamin, tgl_expired)
-    VALUES (NEW.id_vitamin, NEW.tgl_expired);
-END //
-DELIMITER `;
-
+// --------Users Controller-------------//
+//GET USERA
+exports.GetInventori = function (req, res) {
+  const query = `SELECT obat.namaObat, obat.hargaObat, obat.deskripsiObat, DATE_FORMAT(obat.tgl_expired, '%Y-%m-%d') AS tgl_expired
+FROM obat JOIN inventori ON obat.id_obat = inventori.id_obat GROUP BY tgl_expired;`;
   connection.query(query, function (err, rows, fields) {
     if (err) {
       console.log(err);
+      response.send(err);
     } else {
-      response.ok("Berhasil menambahkan data inventory", res);
+      response.ok(rows, res);
     }
   });
 };

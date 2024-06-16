@@ -25,4 +25,7 @@ module.exports = function (app) {
 
   //-----SuperController Route-----//
   app.route("/GetSuper").get(SuperController.GetSuper);
+  app.route("/PostSuper").post(SuperController.PostSuper);
+  app.route("/UpdateSuper/:id").put(SuperController.UpdateSuper);
+  app.route("/DeleteSuper/:id").delete(SuperController.DeleteSuper);
 };

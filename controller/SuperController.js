@@ -16,131 +16,69 @@ exports.GetSuper = function (req, res) {
     }
   });
 };
-//POSTR
-exports.PostObat = function (req, res) {
-  let namaObat = req.body.namaObat;
-  let gambarObat = req.body.gambarObat;
-  let hargaObat = req.body.hargaObat;
-  let deskripsiObat = req.body.deskripsiObat;
-  let tgl_expired = req.body.tgl_expired;
-
-  const queryObat = `INSERT INTO obat (namaObat, hargaObat, gambarObat, deskripsiObat, tgl_expired) VALUES (?,?,?,?,?)`;
-  connection.query(
-    queryObat,
-    [namaObat, hargaObat, gambarObat, deskripsiObat, tgl_expired],
-    function (err, result) {
-      if (err) {
-        console.log(err);
-        res.status(500).send({ message: "Gagal menginput data obat" });
-      } else {
-        // Mendapatkan id_obat
-        const id_obat = result.insertId;
-        const queryInventori = `INSERT INTO inventori (id_obat, tgl_expired) VALUES (?, ?)`;
-        connection.query(
-          queryInventori,
-          [id_obat, tgl_expired],
-          function (err, result) {
-            if (err) {
-              console.log(err);
-              res
-                .status(500)
-                .send({ message: "Gagal menginput data ke inventori" });
-            } else {
-              res.status(200).send({
-                message: "Berhasil menambahkan data obat dan inventori"
-              });
-            }
-          }
-        );
-      }
-    }
-  );
-};
-//PUT
-exports.UpdateObat = function (req, res) {
-  let namaObat = req.body.namaObat;
-  let gambarObat = req.body.gambarObat;
-  let hargaObat = req.body.hargaObat;
-  let deskripsiObat = req.body.deskripsiObat;
-  let tgl_expired = req.body.tgl_expired;
-
-  const query = `UPDATE obat SET namaObat = ?, gambarObat = ?, hargaObat = ?, deskripsiObat = ?, WHERE id_obat = ?`;
-  connection.query(
-    query,
-    [namaObat, gambarObat, hargaObat, deskripsiObat, tgl_expired, id_obat],
-    function (err, rows, fields) {
-      if (err) {
-        console.log(err);
-        response.error("Terjadi kesalahan saat update data", res);
-      } else {
-        if (rows.affectedRows === 0) {
-          console.log("Data tidak ditemukan!!");
-          response.ok("Data tidak ditemukan!!", res);
-        } else {
-          response.ok("Data berhasil diupdate", res);
-        }
-      }
-    }
-  );
-};
-//DELETE
-exports.DeleteObat = function (req, res) {
-  let id_obat = req.body.id_obat;
-
-  const deleteInventoriQuery = `DELETE FROM inventori WHERE id_obat = ?`;
-  const deleteObatQuery = `DELETE FROM obat WHERE id_obat = ?`;
-
-  connection.beginTransaction(function (err) {
+//POST
+exports.PostSuper = function (req, res) {
+  let email = req.body.email;
+  let password = req.body.password;
+  //Not Null nya
+  if (!email || !password) {
+    return res.status(400).json({
+      success: false,
+      message: "Email dan password tidak boleh kosong."
+    });
+  }
+  const query = `INSERT INTO super_admin (email, password) VALUES (?,?)`;
+  connection.query(query, [email, password], function (err, result, fields) {
     if (err) {
       console.log(err);
-      res.status(500).send({ message: "Gagal menghapus data" });
-      return;
+      return res
+        .status(500)
+        .send({ message: "Gagal menginput data super_admin" });
+    } else {
+      response.ok("Data berhasil di input", res);
     }
-    connection.query(deleteInventoriQuery, [id_obat], function (err, result) {
-      if (err) {
-        console.log(err);
-        res
-          .status(500)
-          .send({ message: "Gagal menghapus data dari tabel inventori" });
-        return connection.rollback(function () {
-          res.end();
-        });
+  });
+};
+
+//PUT
+exports.UpdateSuper = function (req, res) {
+  let id = req.params.id;
+  let email = req.body.email;
+  let password = req.body.password;
+
+  const query = `UPDATE super_admin SET email = ?, password = ? WHERE 	id_superAdmin = ?`;
+  connection.query(query, [email, password, id], function (err, rows, fields) {
+    if (err) {
+      console.log(err);
+      response.error("Terjadi kesalahan saat update data", res);
+    } else {
+      if (rows.affectedRows === 0) {
+        console.log("Data tidak ditemukan!!");
+        response.ok("Data tidak ditemukan!!", res);
+      } else {
+        response.ok("Data berhasil diupdate", res);
       }
+    }
+  });
+};
+//DELETE
+exports.DeleteSuper = function (req, res) {
+  let id = req.params.id;
+  const query = `DELETE FROM super_admin WHERE id_superAdmin = ?`;
+  connection.query(query, [id], function (err, result, fields) {
+    if (err) {
+      console.log(err);
+      return res
+        .status(500)
+        .json({ message: "Terjadi kesalahan saat delete data" });
+    } else {
       if (result.affectedRows === 0) {
-        console.log(
-          `Data dengan id ${id_obat} tidak ditemukan di tabel inventori`
-        );
-        res.status(404).send({
-          message: `Data dengan id ${id_obat} tidak ditemukan di tabel inventori`
-        });
-        return connection.rollback(function () {
-          res.end();
-        });
+        return res.status(404).json({ message: "Data tidak ditemukan" });
+      } else {
+        return res
+          .status(200)
+          .json({ message: `Data dengan id ${id} berhasil dihapus` });
       }
-      connection.query(deleteObatQuery, [id_obat], function (err, result) {
-        if (err) {
-          console.log(err);
-          res
-            .status(500)
-            .send({ message: "Gagal menghapus data dari tabel obat" });
-          return connection.rollback(function () {
-            res.end();
-          });
-        }
-        connection.commit(function (err) {
-          if (err) {
-            console.log(err);
-            res.status(500).send({ message: "Gagal menghapus data" });
-            return connection.rollback(function () {
-              res.end();
-            });
-          }
-          console.log("Data berhasil di hapus");
-          res.status(200).send({
-            message: "Data obat dan inventori berhasil dihapus"
-          });
-        });
-      });
-    });
+    }
   });
 };

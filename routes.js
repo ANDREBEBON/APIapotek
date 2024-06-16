@@ -16,9 +16,9 @@ module.exports = function (app) {
 
   //-----ObatController Route-----//
   app.route("/GetUsers").get(UserController.GetUsers);
-  app.route("/PostUsers").post(UserController.PostUsers);
-  app.route("/UpdateUsers/:id").put(UserController.UpdateUsers);
-  app.route("/DeleteUsers/:id").delete(UserController.DeleteUsers);
+  // app.route("/PostUsers").post(UserController.PostUsers);
+  // app.route("/UpdateUsers/:id").put(UserController.UpdateUsers);
+  // app.route("/DeleteUsers/:id").delete(UserController.DeleteUsers);
 
   //-----InventoryController Route-----//
   app.route("/GetInventory").get(InventoryController.GetInventori);
